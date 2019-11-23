@@ -2,6 +2,7 @@ package com.myself.client;
 
 import com.myself.CodeC.PacketDecoder;
 import com.myself.CodeC.PacketEncoder;
+import com.myself.CodeC.Spliter;
 import com.myself.clienthandler.LoginResponseHandler;
 import com.myself.clienthandler.MessageResponseHandler;
 import com.myself.command.PacketCodeC;
@@ -39,6 +40,7 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        socketChannel.pipeline().addLast(new Spliter());
                         socketChannel.pipeline().addLast(new PacketDecoder());
                         socketChannel.pipeline().addLast(new LoginResponseHandler());
                         socketChannel.pipeline().addLast(new MessageResponseHandler());

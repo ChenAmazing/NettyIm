@@ -15,7 +15,7 @@ import java.util.Map;
 import static com.myself.command.Command.*;
 
 public class PacketCodeC {
-    private static final int MAGIC_NUMBER = 0x12345678;
+    public static final int MAGIC_NUMBER = 0x12345678;
     //提供了一个自己的实例对象
     public static final PacketCodeC INSTANCE = new PacketCodeC();
 

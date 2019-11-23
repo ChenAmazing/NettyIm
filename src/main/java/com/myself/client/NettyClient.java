@@ -1,5 +1,9 @@
 package com.myself.client;
 
+import com.myself.CodeC.PacketDecoder;
+import com.myself.CodeC.PacketEncoder;
+import com.myself.clienthandler.LoginResponseHandler;
+import com.myself.clienthandler.MessageResponseHandler;
 import com.myself.command.PacketCodeC;
 import com.myself.request.MessageRequestPacket;
 import com.myself.utils.LoginUtil;
@@ -28,7 +32,6 @@ public class NettyClient {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(workGroup)
                 .channel(NioSocketChannel.class)
-//                .attr(AttributeKey.newInstance("clientKey"),"NettyClient")
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
@@ -36,8 +39,10 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
-//                        socketChannel.pipeline().addLast(new FirstClientHandler());
-                        socketChannel.pipeline().addLast(new ClientHandler());
+                        socketChannel.pipeline().addLast(new PacketDecoder());
+                        socketChannel.pipeline().addLast(new LoginResponseHandler());
+                        socketChannel.pipeline().addLast(new MessageResponseHandler());
+                        socketChannel.pipeline().addLast(new PacketEncoder());
                     }
                 });
 
@@ -74,8 +79,7 @@ public class NettyClient {
 
                     MessageRequestPacket packet = new MessageRequestPacket();
                     packet.setMessage(line);
-                    ByteBuf byteBuf = PacketCodeC.INSTANCE.encode(channel.alloc(), packet);
-                    channel.writeAndFlush(byteBuf);
+                    channel.writeAndFlush(packet);
                 }
             }
         }).start();

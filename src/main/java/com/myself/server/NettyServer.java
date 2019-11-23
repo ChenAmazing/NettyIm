@@ -1,5 +1,9 @@
 package com.myself.server;
 
+import com.myself.CodeC.PacketDecoder;
+import com.myself.CodeC.PacketEncoder;
+import com.myself.serverhandler.LoginRequestHandler;
+import com.myself.serverhandler.MessageRequestHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,16 +26,6 @@ public class NettyServer {
         serverBootstrap.group(bossGroup,workGroup)
                 //指定io模型
                 .channel(NioServerSocketChannel.class)
-                //给服务端的连接指定属性
-//                .attr(AttributeKey.newInstance("serverName"),"NettyServer")
-//                .handler(new ChannelInboundHandlerAdapter(){
-//                    //这个方法会在客户端连接建立成功之后被调用
-//                    @Override
-//                    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-//                        super.channelActive(ctx);
-//                    }
-//                })
-//                .childAttr(clientKey, "clientValue")
                 //设置tcp的一些属性
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
@@ -39,8 +33,10 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
-//                        ch.pipeline().addLast(new FirstServerHandler());
-                        ch.pipeline().addLast(new ServerHandler());
+                        ch.pipeline().addLast(new PacketDecoder());
+                        ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new MessageRequestHandler());
+                        ch.pipeline().addLast(new PacketEncoder());
                     }
                 });
         bind(serverBootstrap,BEGIN_PORT);

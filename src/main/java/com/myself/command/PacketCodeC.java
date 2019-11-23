@@ -35,9 +35,11 @@ public class PacketCodeC {
         serializerMap.put(serializer.getSerializerAlogrithm(), serializer);
     }
 
-    public ByteBuf encode(ByteBufAllocator byteBufAllocator, Packet packet) {
+    public void encode(ByteBuf byteBuf, Packet packet) {
+//     使用PacketEncoder后，不需要手动创建bytebuf对象,不需要返回值
+//     当我们向 pipeline 中添加了这个编码器之后，我们在指令处理完毕之后就只需要writeAndFlush java 对象即可
 
-        ByteBuf byteBuf = byteBufAllocator.ioBuffer();
+//        ByteBuf byteBuf = byteBufAllocator.ioBuffer();
         //序列化对象
         byte[] bytes = Serializer.DEFAULT.serialize(packet);
         // 3. 实际编码过程
@@ -48,7 +50,7 @@ public class PacketCodeC {
         byteBuf.writeInt(bytes.length);
         byteBuf.writeBytes(bytes);
 
-        return byteBuf;
+//        return byteBuf;
     }
 
     public Packet decode(ByteBuf byteBuf) {

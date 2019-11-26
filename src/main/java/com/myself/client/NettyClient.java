@@ -6,8 +6,10 @@ import com.myself.CodeC.Spliter;
 import com.myself.clienthandler.LoginResponseHandler;
 import com.myself.clienthandler.MessageResponseHandler;
 import com.myself.command.PacketCodeC;
+import com.myself.request.LoginRequestPacket;
 import com.myself.request.MessageRequestPacket;
 import com.myself.utils.LoginUtil;
+import com.myself.utils.SessionUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -18,7 +20,6 @@ import io.netty.channel.nio.NioEventLoop;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.AttributeKey;
 
 import java.util.Date;
 import java.util.Scanner;
@@ -72,18 +73,32 @@ public class NettyClient {
     }
 
     public static void startConsoleThread(Channel channel){
+        Scanner sc = new Scanner(System.in);
+        LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
         new Thread(()->{
             while(!Thread.interrupted()){
-                if(LoginUtil.hasLogin(channel)){
-                    System.out.println("输入消息发送至服务端: ");
-                    Scanner sc = new Scanner(System.in);
-                    String line = sc.nextLine();
-
-                    MessageRequestPacket packet = new MessageRequestPacket();
-                    packet.setMessage(line);
-                    channel.writeAndFlush(packet);
+                if(!SessionUtil.hasLogin(channel)){
+                    System.out.print("输入用户名登录: ");
+                    String username = sc.nextLine();
+                    loginRequestPacket.setUserName(username);
+                    // 密码使用默认的
+                    loginRequestPacket.setPassword("pwd");
+                    // 发送登录数据包
+                    channel.writeAndFlush(loginRequestPacket);
+                    waitForLoginResponse();
+                }else {
+                    String toUserId = sc.next();
+                    String message = sc.next();
+                    channel.writeAndFlush(new MessageRequestPacket(toUserId, message));
                 }
             }
         }).start();
+    }
+
+    private static void waitForLoginResponse() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+        }
     }
 }

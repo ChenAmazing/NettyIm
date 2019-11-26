@@ -8,9 +8,9 @@ import static com.myself.command.Command.LOGIN_RESPONSE;
 public class LoginResponsePacket extends Packet {
 
     private boolean success;
-
+    private String userId;
+    private String userName;
     private String reason;
-
 
     @Override
     public Byte getCommand() {

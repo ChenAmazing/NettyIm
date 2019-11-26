@@ -2,11 +2,14 @@ package com.myself.serverhandler;
 
 import com.myself.request.LoginRequestPacket;
 import com.myself.response.LoginResponsePacket;
+import com.myself.session.Session;
 import com.myself.utils.LoginUtil;
+import com.myself.utils.SessionUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginRequestPacket> {
     @Override
@@ -15,20 +18,32 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
 
         LoginResponsePacket loginResponsePacket = new LoginResponsePacket();
         loginResponsePacket.setVersion(loginRequestPacket.getVersion());
+        loginResponsePacket.setUserName(loginRequestPacket.getUserName());
         if (valid(loginRequestPacket)) {
             loginResponsePacket.setSuccess(true);
-            System.out.println(new Date() + ": 登录成功!");
-            LoginUtil.markAsLogin(ctx.channel());
+            String userId = randomUserId();
+            loginResponsePacket.setUserId(userId);
+            System.out.println("[" + loginRequestPacket.getUserName() + "]登录成功");
+            SessionUtil.bindSession(ctx.channel(),new Session(userId, loginRequestPacket.getUserName()));
         } else {
             loginResponsePacket.setReason("账号密码校验失败");
             loginResponsePacket.setSuccess(false);
             System.out.println(new Date() + ": 登录失败!");
         }
-
         // 登录响应
         ctx.channel().writeAndFlush(loginResponsePacket);
     }
+
     private boolean valid(LoginRequestPacket loginRequestPacket) {
         return true;
+    }
+
+    private static String randomUserId() {
+        return UUID.randomUUID().toString().split("-")[0];
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        SessionUtil.unBindSession(ctx.channel());
     }
 }

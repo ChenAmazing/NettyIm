@@ -3,9 +3,7 @@ package com.myself.server;
 import com.myself.CodeC.PacketDecoder;
 import com.myself.CodeC.PacketEncoder;
 import com.myself.CodeC.Spliter;
-import com.myself.serverhandler.AuthHandler;
-import com.myself.serverhandler.LoginRequestHandler;
-import com.myself.serverhandler.MessageRequestHandler;
+import com.myself.serverhandler.*;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandlerContext;
@@ -39,7 +37,9 @@ public class NettyServer {
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginRequestHandler());
                         ch.pipeline().addLast(new AuthHandler());
+                        ch.pipeline().addLast(new LogoutRequestHandler());
                         ch.pipeline().addLast(new MessageRequestHandler());
+                        ch.pipeline().addLast(new CreateGroupRequestHandler());
                         ch.pipeline().addLast(new PacketEncoder());
                     }
                 });

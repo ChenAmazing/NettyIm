@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SessionUtil {
     private static ConcurrentHashMap<String, Channel> userIdMap = new ConcurrentHashMap<String, Channel>();
 
+    //客户端的bindsession和服务端的bindsession会使userIdMap中的channel发生改变
     public static void bindSession(Channel channel, Session session){
         userIdMap.put(session.getUserId(),channel);
         channel.attr(attributes.SESSION).set(session);

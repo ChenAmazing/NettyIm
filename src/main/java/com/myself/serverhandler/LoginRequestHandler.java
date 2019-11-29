@@ -5,13 +5,19 @@ import com.myself.response.LoginResponsePacket;
 import com.myself.session.Session;
 import com.myself.utils.LoginUtil;
 import com.myself.utils.SessionUtil;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.util.Date;
 import java.util.UUID;
 
+@ChannelHandler.Sharable
 public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginRequestPacket> {
+    public static final LoginRequestHandler INSTANCE = new LoginRequestHandler();
+
+    protected LoginRequestHandler() {}
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LoginRequestPacket loginRequestPacket) throws Exception {
         System.out.println(new Date() + ": 收到客户端登录请求……");
@@ -31,7 +37,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
             System.out.println(new Date() + ": 登录失败!");
         }
         // 登录响应
-        ctx.channel().writeAndFlush(loginResponsePacket);
+        ctx.writeAndFlush(loginResponsePacket);
     }
 
     private boolean valid(LoginRequestPacket loginRequestPacket) {

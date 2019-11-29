@@ -3,11 +3,19 @@ package com.myself.serverhandler;
 import com.myself.request.JoinGroupRequestPacket;
 import com.myself.response.JoinGroupResponsePacket;
 import com.myself.utils.SessionUtil;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 
+@ChannelHandler.Sharable
 public class JoinGroupRequestHandler extends SimpleChannelInboundHandler<JoinGroupRequestPacket> {
+    public static final JoinGroupRequestHandler INSTANCE = new JoinGroupRequestHandler();
+
+    private JoinGroupRequestHandler() {
+
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, JoinGroupRequestPacket joinGroupRequestPacket) throws Exception {
         // 1. 获取群对应的 channelGroup，然后将当前用户的 channel 添加进去
@@ -19,6 +27,6 @@ public class JoinGroupRequestHandler extends SimpleChannelInboundHandler<JoinGro
         JoinGroupResponsePacket joinGroupResponsePacket = new JoinGroupResponsePacket();
         joinGroupResponsePacket.setSuccess(true);
         joinGroupResponsePacket.setGroupId(groupId);
-        channelHandlerContext.channel().writeAndFlush(joinGroupResponsePacket);
+        channelHandlerContext.writeAndFlush(joinGroupResponsePacket);
     }
 }

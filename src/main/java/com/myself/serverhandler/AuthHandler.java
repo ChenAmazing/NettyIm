@@ -3,10 +3,16 @@ package com.myself.serverhandler;
 import com.myself.session.Session;
 import com.myself.utils.LoginUtil;
 import com.myself.utils.SessionUtil;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+@ChannelHandler.Sharable
 public class AuthHandler extends ChannelInboundHandlerAdapter {
+    public static final AuthHandler INSTANCE = new AuthHandler();
+
+    private AuthHandler() {}
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if(!SessionUtil.hasLogin(ctx.channel())){

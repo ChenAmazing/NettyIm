@@ -3,11 +3,17 @@ package com.myself.serverhandler;
 import com.myself.request.QuitGroupRequestPacket;
 import com.myself.response.QuitGroupResponsePacket;
 import com.myself.utils.SessionUtil;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 
+@ChannelHandler.Sharable
 public class QuitGroupRequestHandler extends SimpleChannelInboundHandler<QuitGroupRequestPacket> {
+    public static final QuitGroupRequestHandler INSTANCE = new QuitGroupRequestHandler();
+
+    private QuitGroupRequestHandler() {}
+
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, QuitGroupRequestPacket quitGroupRequestPacket) throws Exception {
         // 1. 获取群对应的 channelGroup，然后将当前用户的 channel 移除
@@ -20,6 +26,6 @@ public class QuitGroupRequestHandler extends SimpleChannelInboundHandler<QuitGro
 
         responsePacket.setGroupId(quitGroupRequestPacket.getGroupId());
         responsePacket.setSuccess(true);
-        channelHandlerContext.channel().writeAndFlush(responsePacket);
+        channelHandlerContext.writeAndFlush(responsePacket);
     }
 }

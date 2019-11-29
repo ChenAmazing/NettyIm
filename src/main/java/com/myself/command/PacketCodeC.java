@@ -37,6 +37,8 @@ public class PacketCodeC {
         packetTypeMap.put(QUIT_GROUP_RESPONSE, QuitGroupResponsePacket.class);
         packetTypeMap.put(LIST_GROUP_MEMBERS_REQUEST, ListGroupMembersRequestPacket.class);
         packetTypeMap.put(LIST_GROUP_MEMBERS_RESPONSE, ListGroupMembersResponsePacket.class);
+        packetTypeMap.put(GROUP_MESSAGE_REQUEST, GroupMessageRequestPacket.class);
+        packetTypeMap.put(GROUP_MESSAGE_RESPONSE, GroupMessageResponsePacket.class);
 
 
         serializerMap = new HashMap<>();
@@ -45,8 +47,8 @@ public class PacketCodeC {
     }
 
     public void encode(ByteBuf byteBuf, Packet packet) {
-//     使用PacketEncoder后，不需要手动创建bytebuf对象,不需要返回值
-//     当我们向 pipeline 中添加了这个编码器之后，我们在指令处理完毕之后就只需要writeAndFlush java 对象即可
+        //使用PacketEncoder后，不需要手动创建bytebuf对象,不需要返回值
+        //当我们向 pipeline 中添加了这个编码器之后，我们在指令处理完毕之后就只需要writeAndFlush java 对象即可
 
 //        ByteBuf byteBuf = byteBufAllocator.ioBuffer();
         //序列化对象

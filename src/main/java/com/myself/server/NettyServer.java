@@ -1,5 +1,6 @@
 package com.myself.server;
 
+import com.myself.CodeC.PacketCodecHandler;
 import com.myself.CodeC.PacketDecoder;
 import com.myself.CodeC.PacketEncoder;
 import com.myself.CodeC.Spliter;
@@ -34,19 +35,10 @@ public class NettyServer {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new Spliter());
-                        ch.pipeline().addLast(new PacketDecoder());
-                        ch.pipeline().addLast(new LoginRequestHandler());
-                        ch.pipeline().addLast(new AuthHandler());
-                        ch.pipeline().addLast(new MessageRequestHandler());
-                        ch.pipeline().addLast(new CreateGroupRequestHandler());
-                        // 加群请求处理器
-                        ch.pipeline().addLast(new JoinGroupRequestHandler());
-                        // 退群请求处理器
-                        ch.pipeline().addLast(new QuitGroupRequestHandler());
-                        // 获取群成员请求处理器
-                        ch.pipeline().addLast(new ListGroupMembersRequestHandler());
-                        ch.pipeline().addLast(new LogoutRequestHandler());
-                        ch.pipeline().addLast(new PacketEncoder());
+                        ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
+                        ch.pipeline().addLast(LoginRequestHandler.INSTANCE);
+                        ch.pipeline().addLast(AuthHandler.INSTANCE);
+                        ch.pipeline().addLast(IMHandler.INSTANCE);
                     }
                 });
         bind(serverBootstrap,BEGIN_PORT);

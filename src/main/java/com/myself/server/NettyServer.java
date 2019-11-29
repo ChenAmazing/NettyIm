@@ -37,9 +37,15 @@ public class NettyServer {
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginRequestHandler());
                         ch.pipeline().addLast(new AuthHandler());
-                        ch.pipeline().addLast(new LogoutRequestHandler());
                         ch.pipeline().addLast(new MessageRequestHandler());
                         ch.pipeline().addLast(new CreateGroupRequestHandler());
+                        // 加群请求处理器
+                        ch.pipeline().addLast(new JoinGroupRequestHandler());
+                        // 退群请求处理器
+                        ch.pipeline().addLast(new QuitGroupRequestHandler());
+                        // 获取群成员请求处理器
+                        ch.pipeline().addLast(new ListGroupMembersRequestHandler());
+                        ch.pipeline().addLast(new LogoutRequestHandler());
                         ch.pipeline().addLast(new PacketEncoder());
                     }
                 });

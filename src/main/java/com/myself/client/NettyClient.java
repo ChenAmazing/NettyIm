@@ -5,10 +5,7 @@ import com.myself.CodeC.PacketEncoder;
 import com.myself.CodeC.Spliter;
 import com.myself.client.console.ConsoleCommandManager;
 import com.myself.client.console.LoginConsoleCommand;
-import com.myself.clienthandler.CreateGroupResponseHandler;
-import com.myself.clienthandler.LoginResponseHandler;
-import com.myself.clienthandler.LogoutResponseHandler;
-import com.myself.clienthandler.MessageResponseHandler;
+import com.myself.clienthandler.*;
 import com.myself.command.PacketCodeC;
 import com.myself.request.LoginRequestPacket;
 import com.myself.request.MessageRequestPacket;
@@ -48,9 +45,14 @@ public class NettyClient {
                         socketChannel.pipeline().addLast(new Spliter());
                         socketChannel.pipeline().addLast(new PacketDecoder());
                         socketChannel.pipeline().addLast(new LoginResponseHandler());
-                        socketChannel.pipeline().addLast(new LogoutResponseHandler());
                         socketChannel.pipeline().addLast(new MessageResponseHandler());
                         socketChannel.pipeline().addLast(new CreateGroupResponseHandler());
+                        socketChannel.pipeline().addLast(new JoinGroupResponseHandler());
+                        // 退群响应处理器
+                        socketChannel.pipeline().addLast(new QuitGroupResponseHandler());
+                        // 获取群成员响应处理器
+                        socketChannel.pipeline().addLast(new ListGroupMembersResponseHandler());
+                        socketChannel.pipeline().addLast(new LogoutResponseHandler());
                         socketChannel.pipeline().addLast(new PacketEncoder());
                     }
                 });
